@@ -3,6 +3,8 @@ name: Test & Verify
 on:
   pull_request:
     types:
+      - open
+      - reopen
       - synchronize
 
 jobs:
