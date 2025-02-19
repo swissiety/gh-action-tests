@@ -2,7 +2,8 @@ name: Test & Verify
 
 on:
   pull_request:
-    - types: synchronize
+    types:
+      - synchronize
 
 jobs:
   BuildAndTest:
