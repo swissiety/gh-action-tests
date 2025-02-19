@@ -53,7 +53,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         # If the branch "version_<version>" does not exist, create the branch and update the version in all files
-      - name: Create branch and update SPDS version
+      - name: Create branch and update version
         if:  ${{ env.VERSION_BRANCH_EXISTS == '0' }}
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
@@ -61,19 +61,20 @@ jobs:
           git checkout -b version_${{ steps.versioning.outputs.version }}
           mvn build-helper:parse-version versions:set -DnewVersion=\${{ steps.versioning.outputs.version }} versions:commit -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
           git ls-files | grep 'pom.xml$' | xargs git add
-          git commit --allow-empty -am "Update SPDS version to ${{ steps.versioning.outputs.version }}"
+          git commit --allow-empty -am "Update version to ${{ steps.versioning.outputs.version }}"
           git push origin version_${{ steps.versioning.outputs.version }}
       # If a PR "version_<version>" -> "main" does not exist, create the PR
       - name: Open pull request for version update
         if: ${{ env.PR_EXISTS == '0' }}
         run: |
-          gh pr create -B main -H version_${{ steps.versioning.outputs.version }} -t "Update SPDS version to ${{ steps.versioning.outputs.version }}" -b "This PR was created by the version-update workflow. Please make sure to delete the branch after merging, otherwise future workflows might fail."
+          gh pr create -B main -H version_${{ steps.versioning.outputs.version }} -t "Update version to ${{ steps.versioning.outputs.version }}" -b "This PR was created by the version-update workflow. Please make sure to delete the branch after merging, otherwise future workflows might fail."
+        # if permissions denied: https://www.raulmelo.me/en/til/how-to-solve-permission-to-x-denied-to-github-actions-bot
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   version-release:
     # This job runs only on merged PRs, which were opened by the version-update job
-    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.user.login == 'github-actions[bot]' }}
+    if: ${{ github.event.pull_request.merged && github.event.pull_request.user.login == 'github-actions[bot]' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source code
@@ -98,5 +99,5 @@ jobs:
         run: |
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
           git config --global user.name "${{ github.actor }}"
-          git tag -a ${{ steps.versioning.outputs.version }} -m "SPDS version ${{ steps.versioning.outputs.version }}"
+          git tag -a ${{ steps.versioning.outputs.version }} -m "version ${{ steps.versioning.outputs.version }}"
           git push origin ${{ steps.versioning.outputs.version }}
