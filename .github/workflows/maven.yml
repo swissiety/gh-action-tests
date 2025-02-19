@@ -1,8 +1,8 @@
 name: Test & Verify
 
 on:
-  push:
   pull_request:
+    - types: synchronize
 
 jobs:
   BuildAndTest:
