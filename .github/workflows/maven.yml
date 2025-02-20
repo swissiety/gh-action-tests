@@ -1,4 +1,5 @@
 name: Test & Verify
+run-name: Test & Verify
 
 on:
   pull_request:
