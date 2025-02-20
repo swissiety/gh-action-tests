@@ -73,7 +73,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  version-release:
+  tag-that-version:
     # This job runs only on merged PRs, which were opened by the version-update job
     if: ${{ github.event.pull_request.merged && github.event.pull_request.user.login == 'github-actions[bot]' }}
     runs-on: ubuntu-latest
